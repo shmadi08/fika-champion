@@ -182,6 +182,29 @@ code, .mono { font-family: ui-monospace, monospace; letter-spacing: .3px; }
 .install-hint {
   margin-top: 10px; font-size: 13px; color: var(--muted); line-height: 1.8;
 }
+.auth-wrap {
+  height: 100dvh;
+  max-width: 430px;
+  margin: 0 auto;
+  padding: 10px 16px calc(12px + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: auto;
+}
+.logo-big { width: 64px; height: 64px; margin: 0 auto 8px; }
+.auth-wrap .card { margin-bottom: 0; padding: 14px; }
+.auth-wrap label { margin: 6px 0 4px; }
+.auth-wrap input { padding: 10px 12px; }
+.auth-wrap .btn { margin-top: 10px !important; }
+
+@media (max-height: 740px) {
+  .logo-big { width: 48px; height: 48px; margin-bottom: 4px; }
+  .auth-wrap { justify-content: flex-start; padding-top: 12px; }
+}
+@media (max-height: 640px) {
+  .logo-big { display: none; }
+}
 
 @media (min-width: 720px) {
   .nav { border-radius: 18px 18px 0 0; }
