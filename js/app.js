@@ -165,7 +165,7 @@
         btn.className = "btn";
         btn.style.marginTop = "8px";
         btn.textContent = pred ? "ویرایش پیش‌بینی" : "ثبت پیش‌بینی";
-        btn.onclick = () => {
+        btn.onclick = async () => {
           const h = Number(sb.querySelector('[data-side="h"]').value);
           const a = Number(sb.querySelector('[data-side="a"]').value);
           try { await S.savePrediction(m.id, h, a); toast("ذخیره شد"); render(); }
@@ -237,7 +237,7 @@
       log.appendChild(d);
     });
     log.scrollTop = log.scrollHeight;
-    $("chatsend").onclick = () => {
+    $("chatsend").onclick = async () => {
       try { await S.sendMessage($("chattext").value); render(); }
       catch (e) { toast(e.message); }
     };
@@ -287,12 +287,12 @@
         </p>
       </div>
     `;
-    $("savename").onclick = () => {
+    $("savename").onclick = async () => {
       try { await S.updateProfile($("newname").value); toast("ذخیره شد"); render(); }
       catch (e) { toast(e.message); }
     };
     $("out").onclick = async () => { await S.logout(); boot(); };
-    $("fbsend").onclick = () => {
+    $("fbsend").onclick = async () => {
       try { await S.sendFeedback($("fb").value); toast("بازخورد ثبت شد"); render(); }
       catch (e) { toast(e.message); }
     };
@@ -372,7 +372,7 @@
       }
       invout.appendChild(d);
     });
-    $("mkinv").onclick = () => {
+    $("mkinv").onclick = async () => {
       try {
         const inv = await S.createInvite({ maxUses: $("imax").value, days: $("idays").value });
         toast("کد ساخته شد");
@@ -395,11 +395,11 @@
       }
       mems.appendChild(d);
     });
-    $("setres").onclick = () => {
+    $("setres").onclick = async () => {
       try { await S.setResult($("resmatch").value, $("resh").value, $("resa").value); toast("نتیجه دستی ثبت شد"); render(); }
       catch (e) { toast(e.message); }
     };
-    $("addk").onclick = () => {
+    $("addk").onclick = async () => {
       try {
         const local = $("kkick").value;
         if (!local) throw new Error("ساعت سوت را بگذارید.");
