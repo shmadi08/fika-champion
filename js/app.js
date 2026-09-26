@@ -47,7 +47,7 @@
       if (mode === "login") await S.login(payload);
       else await S.register(payload);
       boot();
-    } catch (err) { toast(err.message); }
+    } catch (err) { alert(err.message); }
   }
 
   function navTo(name) {
