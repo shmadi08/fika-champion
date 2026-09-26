@@ -423,8 +423,12 @@ async function api(req, res, url) {
 
     if (route === "POST /api/profile") {
       const s = needActive();
-      const displayName = String(body.displayName || "").trim();
-      if (displayName.length < 2 || displayName.length > 24) return fail("نام نمایشی ۲ تا ۲۴ حرف.");
+      let displayName = String(body.displayName || "").trim();
+      const password = String(body.password || "");
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return fail("ایمیل درست نیست.");
+      if (displayName.length < 2) displayName = email.split("@")[0].slice(0, 24);
+      if (displayName.length < 2) displayName = "بازیکن";
+      if (displayName.length > 24) displayName = displayName.slice(0, 24);
       s.user.displayName = displayName;
       save(db);
       return send(res, 200, { ok: true });
