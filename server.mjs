@@ -47,18 +47,34 @@ async function ghPut(db) {
     headers: { Authorization: "Bearer " + GH_TOKEN, Accept: "application/vnd.github+json", "User-Agent": "fika-champion", "Content-Type": "application/json" },
     body: JSON.stringify(payload)
   });
+  if (r.status === 409 || r.status === 422) {
+    await ghGet();
+    if (ghSha) payload.sha = ghSha;
+    const r2 = await fetch("https://api.github.com/repos/" + GH_REPO + "/contents/" + GH_PATH, {
+      method: "PUT",
+      headers: { Authorization: "Bearer " + GH_TOKEN, Accept: "application/vnd.github+json", "User-Agent": "fika-champion", "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    if (!r2.ok) throw new Error("github-put " + r2.status);
+    const j2 = await r2.json();
+    ghSha = j2.content && j2.content.sha;
+    return;
+  }
   if (!r.ok) throw new Error("github-put " + r.status);
   const j = await r.json();
   ghSha = j.content && j.content.sha;
 }
 async function load() {
-  if (mem) {
+  if (mem && Array.isArray(mem.users)) {
     if (!mem.matches || !mem.matches.length) mem.matches = readJSON(MATCHES_PATH, []);
     return mem;
   }
-  if (persistOn()) { try { mem = await ghGet(); } catch (err) { console.error("persist load", err.message); } }
-  if (!mem) mem = readJSON(DB_PATH, null);
-  if (!mem) mem = seed();
+  if (persistOn()) {
+    try { mem = await ghGet(); } catch (err) { console.error("persist load", err.message); }
+  }
+  const s = seed();
+  mem = Object.assign(s, mem && typeof mem === "object" ? mem : {});
+  if (!Array.isArray(mem.users)) mem.users = [];
   if (!mem.matches || !mem.matches.length) mem.matches = readJSON(MATCHES_PATH, []);
   return mem;
 }
