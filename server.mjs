@@ -11,6 +11,7 @@ const MATCHES_PATH = path.join(__dirname, "data", "matches.json");
 const GH_TOKEN = process.env.GITHUB_TOKEN || "";
 const GH_REPO = process.env.GITHUB_DATA_REPO || "";
 const GH_PATH = process.env.GITHUB_DATA_PATH || "db.json";
+console.log("persist", Boolean(process.env.GITHUB_TOKEN), process.env.GITHUB_DATA_REPO);
 const LOCK_MS = 15 * 60 * 1000;
 const KNOCKOUT = new Set(["playoff", "r16", "qf", "sf", "final"]);
 const SF_FINAL = new Set(["sf", "final"]);
