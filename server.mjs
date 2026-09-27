@@ -8,7 +8,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT || 8787);
 const DB_PATH = path.join(__dirname, "data", "db.json");
 const MATCHES_PATH = path.join(__dirname, "data", "matches.json");
-
+const GH_TOKEN = process.env.GITHUB_TOKEN || "";
+const GH_REPO = process.env.GITHUB_DATA_REPO || "";
+const GH_PATH = process.env.GITHUB_DATA_PATH || "db.json";
 const LOCK_MS = 15 * 60 * 1000;
 const KNOCKOUT = new Set(["playoff", "r16", "qf", "sf", "final"]);
 const SF_FINAL = new Set(["sf", "final"]);
@@ -24,14 +26,47 @@ function seed() {
   const matches = readJSON(MATCHES_PATH, []);
   return { users: [], memberships: [], invites: [], predictions: [], messages: [], feedback: [], matches, audit: [], rates: {}, sessions: {} };
 }
-function load() {
-  const db = readJSON(DB_PATH, null) || seed();
-  if (!db.matches?.length) db.matches = readJSON(MATCHES_PATH, []);
-  return db;
+let mem = null;
+let ghSha = null;
+function persistOn() { return !!(GH_TOKEN && GH_REPO); }
+async function ghGet() {
+  const r = await fetch("https://api.github.com/repos/" + GH_REPO + "/contents/" + GH_PATH, {
+    headers: { Authorization: "Bearer " + GH_TOKEN, Accept: "application/vnd.github+json", "User-Agent": "fika-champion" }
+  });
+  if (r.status === 404) return null;
+  if (!r.ok) throw new Error("github-get " + r.status);
+  const j = await r.json();
+  ghSha = j.sha;
+  return JSON.parse(Buffer.from(j.content, "base64").toString("utf8"));
 }
-function save(db) {
+async function ghPut(db) {
+  const payload = { message: "update fika data", content: Buffer.from(JSON.stringify(db)).toString("base64") };
+  if (ghSha) payload.sha = ghSha;
+  const r = await fetch("https://api.github.com/repos/" + GH_REPO + "/contents/" + GH_PATH, {
+    method: "PUT",
+    headers: { Authorization: "Bearer " + GH_TOKEN, Accept: "application/vnd.github+json", "User-Agent": "fika-champion", "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+  if (!r.ok) throw new Error("github-put " + r.status);
+  const j = await r.json();
+  ghSha = j.content && j.content.sha;
+}
+async function load() {
+  if (mem) {
+    if (!mem.matches || !mem.matches.length) mem.matches = readJSON(MATCHES_PATH, []);
+    return mem;
+  }
+  if (persistOn()) { try { mem = await ghGet(); } catch (err) { console.error("persist load", err.message); } }
+  if (!mem) mem = readJSON(DB_PATH, null);
+  if (!mem) mem = seed();
+  if (!mem.matches || !mem.matches.length) mem.matches = readJSON(MATCHES_PATH, []);
+  return mem;
+}
+async function save(db) {
+  mem = db;
   fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
-  fs.writeFileSync(DB_PATH, JSON.stringify(db));
+  try { fs.writeFileSync(DB_PATH, JSON.stringify(db)); } catch (e) {}
+  if (persistOn()) { try { await ghPut(db); } catch (err) { console.error("persist save", err.message); } }
 }
 function rand(n = 24) { return crypto.randomBytes(n).toString("hex"); }
 function hash(password, salt) {
@@ -174,7 +209,7 @@ const server = http.createServer(async (req, res) => {
 });
 
 async function api(req, res, url) {
-  const db = load();
+  const db = await load();
   const route = req.method + " " + url.pathname;
   const body = req.method === "GET" ? {} : await readBody(req).catch(() => null);
   if (body === null) return send(res, 400, { error: "درخواست نامعتبر." });
@@ -223,7 +258,7 @@ async function api(req, res, url) {
       const sid = rand(24);
       db.sessions[sid] = { userId: user.id, at: Date.now() };
       audit(db, user.id, isFirst ? "first-admin" : "join", "");
-      save(db);
+      await save(db);
       return send(res, 200, { ok: true, isFirst }, setSid(res, sid, req));
     }
 
@@ -234,14 +269,14 @@ async function api(req, res, url) {
       if (!user || hash(String(body.password || ""), user.salt) !== user.passwordHash) return fail("ایمیل یا رمز نادرست است.", 401);
       const sid = rand(24);
       db.sessions[sid] = { userId: user.id, at: Date.now() };
-      save(db);
+      await save(db);
       return send(res, 200, { ok: true }, setSid(res, sid, req));
     }
 
     if (route === "POST /api/logout") {
       const s = session();
       if (s) delete db.sessions[s.sid];
-      save(db);
+      await save(db);
       return send(res, 200, { ok: true }, { "Set-Cookie": "sid=; HttpOnly; Path=/; Max-Age=0; SameSite=Lax" });
     }
 
@@ -281,7 +316,7 @@ async function api(req, res, url) {
       const existing = db.predictions.find((p) => p.userId === s.user.id && p.matchId === match.id);
       if (existing) { existing.home = home; existing.away = away; existing.at = Date.now(); }
       else db.predictions.push({ id: rand(6), userId: s.user.id, matchId: match.id, home, away, at: Date.now() });
-      save(db);
+      await save(db);
       return send(res, 200, { ok: true });
     }
 
@@ -314,7 +349,7 @@ async function api(req, res, url) {
       if (text.length > 400) return fail("پیام خیلی بلند است.");
       db.messages.push({ id: rand(6), userId: s.user.id, text, at: Date.now(), hidden: false });
       db.messages = db.messages.slice(-300);
-      save(db);
+      await save(db);
       return send(res, 200, { ok: true });
     }
 
@@ -324,7 +359,7 @@ async function api(req, res, url) {
       if (!msg) return fail("پیام نیست.");
       msg.hidden = true; msg.hiddenBy = s.user.id; msg.hiddenAt = Date.now();
       audit(db, s.user.id, "hide-message", body.id);
-      save(db);
+      await save(db);
       return send(res, 200, { ok: true });
     }
 
@@ -335,7 +370,7 @@ async function api(req, res, url) {
       if (!text) return fail("متن خالی رد می‌شود.");
       if (text.length > 800) return fail("متن خیلی بلند است.");
       db.feedback.push({ id: rand(6), userId: s.user.id, text, at: Date.now() });
-      save(db);
+      await save(db);
       return send(res, 200, { ok: true });
     }
 
@@ -356,7 +391,7 @@ async function api(req, res, url) {
       const inv = { id: rand(6), code: rand(18), maxUses, used: 0, createdAt: Date.now(), expiresAt: Date.now() + days * 86400000, revoked: false, by: s.user.id };
       db.invites.unshift(inv);
       audit(db, s.user.id, "invite-create", "");
-      save(db);
+      await save(db);
       return send(res, 200, { invite: inv });
     }
 
@@ -365,7 +400,7 @@ async function api(req, res, url) {
       const inv = db.invites.find((i) => i.id === body.id);
       if (!inv) return fail("دعوت نیست.");
       inv.revoked = true;
-      save(db);
+      await save(db);
       return send(res, 200, { ok: true });
     }
 
@@ -391,7 +426,7 @@ async function api(req, res, url) {
       mem.removed = true; mem.removedAt = Date.now();
       Object.keys(db.sessions).forEach((sid) => { if (db.sessions[sid].userId === body.userId) delete db.sessions[sid]; });
       audit(db, s.user.id, "remove-member", body.userId);
-      save(db);
+      await save(db);
       return send(res, 200, { ok: true });
     }
 
@@ -405,7 +440,7 @@ async function api(req, res, url) {
       if (!validGoals(hg) || !validGoals(ag)) return fail("گل ۰ تا ۲۰.");
       match.hg = hg; match.ag = ag; match.source = "manual"; match.manualBy = s.user.id; match.manualAt = Date.now();
       audit(db, s.user.id, "manual-result", match.id);
-      save(db);
+      await save(db);
       return send(res, 200, { ok: true });
     }
 
@@ -417,7 +452,7 @@ async function api(req, res, url) {
       const match = { id: "k-" + rand(4), md: 0, stage: body.stage, kickoff: new Date(t).toISOString(), home: body.home, away: body.away, source: null };
       db.matches.push(match);
       audit(db, s.user.id, "add-knockout", match.id);
-      save(db);
+      await save(db);
       return send(res, 200, { match });
     }
 
@@ -430,7 +465,7 @@ async function api(req, res, url) {
       if (displayName.length < 2) displayName = "بازیکن";
       if (displayName.length > 24) displayName = displayName.slice(0, 24);
       s.user.displayName = displayName;
-      save(db);
+      await save(db);
       return send(res, 200, { ok: true });
     }
 
