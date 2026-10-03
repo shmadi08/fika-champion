@@ -17,8 +17,14 @@
 
   function team(code) { return T[code] || code; }
   function crest(code) {
-    var id = {RMA:86,BAR:81,MCI:65,MUN:66,LIV:64,ARS:57,AVL:58,BAY:5,DOR:4,PSG:524,INT:108,ATL:78,NAP:113,POR:503,SCP:498,GAL:610,FEN:611,PSV:674,RBL:721,BRU:851,LIL:521,ROM:100,BET:90,VIL:94,FEY:675,STU:10,LEN:516}[code];
-    return id ? "https://crests.football-data.org/" + id + ".png" : "";
+    var id = {RMA:86,BAR:81,MCI:65,MUN:66,LIV:64,ARS:57,AVL:58,BAY:5,DOR:4,PSG:524,INT:108,ATL:78,NAP:113,POR:503,SCP:498,GAL:610,FEN:611,PSV:674,RBL:721,BRU:851,LIL:521,ROM:100,BET:90,VIL:94,FEY:675,STU:10,LEN:516,SLP:560,SHA:1887,LASK:2012,BOD:1876,VIK:1878,SLO:1883,AEK:2013,COM:7397};
+    var n = id[code];
+    return n ? "https://crests.football-data.org/" + n + ".png" : "";
+  }
+  function badge(code) {
+    var src = crest(code);
+    if (src) return '<img class="crest" alt="" src="' + src + '" onerror="this.style.display=\'none\'">';
+    return '<span class="crest-fallback">' + code.slice(0, 3) + "</span>";
   }
   function showAuth(show) {
     $("auth").classList.toggle("hidden", !show);
