@@ -309,7 +309,7 @@
           <div><label>سقف استفاده</label><input id="imax" type="number" value="3" min="1" max="20"></div>
           <div><label>اعتبار (روز)</label><input id="idays" type="number" value="7" min="1" max="30"></div>
         </div>
-        <button class="btn" id="mkinv" style="margin-top:10px">ساخت کد بلند تصادفی</button>
+        <button class="btn" id="mkinv" style="margin-top:10px">ساخت و اشتراک دعوت</button>
         <div id="invout" style="margin-top:10px"></div>
       </div>
       <div class="card">
