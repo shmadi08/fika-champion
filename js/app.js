@@ -125,7 +125,7 @@
       wrap.innerHTML = `
         <div class="meta">
           
-          <span>${E.tehran(m.kickoff)} تهران<br>${E.stockholm(m.kickoff)} استکهلم</span>
+          <span dir="ltr">${E.tehran(m.kickoff)} Tehran<br>${E.stockholm(m.kickoff)} Stockholm</span>
           <span class="badge ${st.key === "lock" || st.key === "done" ? "lock" : ""} ${m.source === "manual" ? "manual" : ""}">${st.label}${m.md ? " · هفته " + m.md : " · " + (window.FIKA_STAGES[m.stage] || "")}</span>
         </div>
         <div class="match">
@@ -322,7 +322,7 @@
     });
     var rows = Object.keys(table).map(function (k) { return table[k]; });
     rows.sort(function (x, y) { return y.pts - x.pts || (y.gf - y.ga) - (x.gf - x.ga) || y.gf - x.gf; });
-    var html = '<div class="hero"><h2>Champions League</h2><p>2026–27 league phase</p></div>';
+    var html = '<div class="hero"><h2>Champions League</h2><p dir="ltr">2026/27 league phase</p></div>';
     html += '<div class="card standings-wrap" dir="ltr"><table class="standings"><thead><tr><th>#</th><th>Club</th><th>MP</th><th>W</th><th>D</th><th>L</th><th>Pts</th><th>GF</th><th>GA</th><th>GD</th></tr></thead><tbody>';
     rows.forEach(function (r, i) {
       var gd = r.gf - r.ga;
