@@ -57,6 +57,11 @@
     }[code];
     return file ? "https://commons.wikimedia.org/wiki/Special:FilePath/" + file + "?width=64" : "";
   }
+    function badge(code) {
+    var src = crest(code);
+    if (src) return '<img class="crest" alt="" src="' + src + '" onerror="this.style.display=\'none\'">';
+    return '<span class="crest-fallback">' + code.slice(0, 3) + "</span>";
+  }
   function showAuth(show) {
     $("auth").classList.toggle("hidden", !show);
     $("app").classList.toggle("hidden", show);
