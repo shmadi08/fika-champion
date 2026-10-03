@@ -1,14 +1,14 @@
 /* تقویم رسمی یوفا ۲۶/۲۷ — ساعت سوت به وقت جهانی ذخیره می‌شود */
 window.FIKA_TEAMS = {
-  AEK: "آاک آتن", LASK: "لاسک", BRU: "کلوب بروژ", AVL: "استون ویلا",
-  DOR: "دورتموند", VIL: "ویارئال", POR: "پورتو", MCI: "منچسترسیتی",
-  LIL: "لیل", BET: "بتیس", RMA: "رئال مادرید", INT: "اینتر",
-  BAR: "بارسلونا", FEY: "فاینورد", STU: "اشتوتگارت", VIK: "وایکینگ",
-  LIV: "لیورپول", ATL: "اتلتیکو مادرید", PSG: "پاری‌سن‌ژرمن", SLO: "اسلوان براتیسلاوا",
-  SCP: "اسپورتینگ", GAL: "گالاتاسرای", NAP: "ناپولی", ARS: "آرسنال",
-  FEN: "فنرباغچه", ROM: "رم", PSV: "پی‌اس‌وی", SHA: "شاختار",
-  COM: "کومو", RBL: "لایپزیگ", BAY: "بایرن مونیخ", BOD: "بودو/گلیمت",
-  MUN: "منچستریونایتد", SAB: "صباح", SLP: "اسلاویا پراگ", LEN: "لانس"
+  AEK: "AEK Athens", LASK: "LASK", BRU: "Club Brugge", AVL: "Aston Villa",
+  DOR: "Dortmund", VIL: "Villarreal", POR: "Porto", MCI: "Man City",
+  LIL: "Lille", BET: "Real Betis", RMA: "Real Madrid", INT: "Inter",
+  BAR: "Barcelona", FEY: "Feyenoord", STU: "Stuttgart", VIK: "Viking",
+  LIV: "Liverpool", ATL: "Atletico Madrid", PSG: "PSG", SLO: "Slovan Bratislava",
+  SCP: "Sporting CP", GAL: "Galatasaray", NAP: "Napoli", ARS: "Arsenal",
+  FEN: "Fenerbahce", ROM: "Roma", PSV: "PSV", SHA: "Shakhtar",
+  COM: "Como", RBL: "RB Leipzig", BAY: "Bayern", BOD: "Bodo/Glimt",
+  MUN: "Man United", SAB: "Sabah", SLP: "Slavia Prague", LEN: "Lens"
 };
 
 function kick(iso) { return iso; }
