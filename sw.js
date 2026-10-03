@@ -1,4 +1,4 @@
-const CACHE = "fika-champion-v12";
+const CACHE = "fika-champion-v13";
 const ASSETS = [
   "./",
   "./index.html",
