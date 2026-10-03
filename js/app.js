@@ -121,13 +121,13 @@
       wrap.innerHTML = `
         <div class="meta">
           
-          <span>{E.tehran(m.kickoff)} تهران<br>{E.stockholm(m.kickoff)} استکهلم</span>
+          <span>${E.tehran(m.kickoff)} تهران<br>${E.stockholm(m.kickoff)} استکهلم</span>
           <span class="badge ${st.key === "lock" || st.key === "done" ? "lock" : ""} ${m.source === "manual" ? "manual" : ""}">${st.label}${m.md ? " · هفته " + m.md : " · " + (window.FIKA_STAGES[m.stage] || "")}</span>
         </div>
         <div class="match">
-          <div class="team"><img class="crest" alt="" src=" {team(m.home)}</div>
+          <div class="team"><img class="crest" alt="" src="${crest(m.home)}" onerror="this.style.display='none'">${team(m.home)}</div>
           <div class="score-box" data-id="${m.id}"></div>
-          <div class="team away"><img class="crest" alt="" src=" {team(m.away)}</div>
+          <div class="team away"><img class="crest" alt="" src="${crest(m.away)}" onerror="this.style.display='none'">${team(m.away)}</div>
         </div>
         <div class="pts-slot"></div>
       `;
