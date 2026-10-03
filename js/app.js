@@ -22,8 +22,7 @@
     $("app").classList.toggle("hidden", show);
   }
 
-function renderAuth(mode) { $("auth-title").textContent = mode === "login" ? "ورود" : "ساخت حساب"; var code = ""; try { code = new URLSearchParams(location.search).get("invite") || ""; } catch (e) {} $("invite-wrap").classList.toggle("hidden", mode === "login"); $("name-wrap").classList.toggle("hidden", mode === "login"); ("auth-switch").innerHTML = mode === "login" ? "حساب ندارید؟ <a href=\"#\" data-go=\"reg\">ساخت حساب</a>" : "حساب دارید؟ <a href=\"#\" data-go=\"login\">ورود</a>"; $("auth-form").dataset.mode = mode; $("first-hint").classList.add("hidden"); if (("inviteCode") && code) $("inviteCode").value = code; }
-  }
+  function renderAuth(mode) { var title = document.getElementById("auth-title"); var inviteWrap = document.getElementById("invite-wrap"); var nameWrap = document.getElementById("name-wrap"); var form = document.getElementById("auth-form"); var codeBox = document.getElementById("inviteCode"); var code = ""; try { code = new URLSearchParams(location.search).get("invite") || ""; } catch (e) {} if (title) title.textContent = mode === "login" ? "ورود" : "ساخت حساب"; if (inviteWrap) inviteWrap.classList.toggle("hidden", mode === "login"); if (nameWrap) nameWrap.classList.toggle("hidden", mode === "login"); if (form) form.dataset.mode = mode; if (codeBox && code) codeBox.value = code; }
 
   async function onAuth(ev) {
     ev.preventDefault();
