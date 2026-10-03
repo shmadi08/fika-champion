@@ -16,46 +16,8 @@
   let mdFilter = 2;
 
   function team(code) { return T[code] || code; }
-    function crest(code) {
-    var file = {
-      AEK: "AEK_Athens_F.C._logo.svg",
-      LASK: "LASK_Linz_logo.svg",
-      BRU: "Club_Brugge_KV_logo.svg",
-      AVL: "Aston_Villa_FC_new_crest.svg",
-      DOR: "Borussia_Dortmund_logo.svg",
-      VIL: "Villarreal_CF_logo.svg",
-      POR: "F.C._Porto.svg",
-      MCI: "Manchester_City_FC_badge.svg",
-      LIL: "LOSC_Lille_logo.svg",
-      BET: "Real_Betis_logo.svg",
-      RMA: "Real_Madrid_CF.svg",
-      INT: "FC_Internazionale_Milano_2021.svg",
-      BAR: "FC_Barcelona_(crest).svg",
-      FEY: "Feyenoord_logo.svg",
-      STU: "VfB_Stuttgart_1893_Logo.svg",
-      VIK: "Viking_FK_logo.svg",
-      LIV: "Liverpool_FC.svg",
-      ATL: "Atletico_Madrid_logo.svg",
-      PSG: "Paris_Saint-Germain_F.C..svg",
-      SLO: "ŠK_Slovan_Bratislava_logo.svg",
-      SCP: "Sporting_Clube_de_Portugal_logo.svg",
-      GAL: "Galatasaray_Sports_Club_Logo.svg",
-      NAP: "S.S.C._Napoli_logo.svg",
-      ARS: "Arsenal_FC.svg",
-      FEN: "Fenerbahçe_SK.svg",
-      ROM: "AS_Roma_logo_(2017).svg",
-      PSV: "PSV_Eindhoven.svg",
-      SHA: "FC_Shakhtar_Donetsk.svg",
-      COM: "Como_1907_logo.svg",
-      RBL: "RB_Leipzig_2014_logo.svg",
-      BAY: "FC_Bayern_München_logo_(2017).svg",
-      BOD: "FK_Bodø-Glimt_logo.svg",
-      MUN: "Manchester_United_FC_crest.svg",
-      SAB: "Sabah_FK_logo.svg",
-      SLP: "SK_Slavia_Prague_logo.svg",
-      LEN: "RC_Lens_logo.svg"
-    }[code];
-    return file ? "https://commons.wikimedia.org/wiki/Special:FilePath/" + file + "?width=64" : "";
+  function crest(code) {
+    return code + ".png";
   }
     function badge(code) {
     var src = crest(code);
