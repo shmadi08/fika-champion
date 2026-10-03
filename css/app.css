@@ -210,3 +210,10 @@ code, .mono { font-family: ui-monospace, monospace; letter-spacing: .3px; }
 .team { display: flex; align-items: center; gap: 6px; justify-content: flex-end; }
 .team.away { justify-content: flex-start; }
 .nav { grid-template-columns: repeat(6, 1fr); }
+.standings-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.standings { width: 100%; min-width: 640px; border-collapse: collapse; font-size: 13px; }
+.standings th, .standings td { padding: 8px 6px; border-bottom: 1px solid rgba(255,255,255,.08); text-align: center; white-space: nowrap; }
+.standings .club { text-align: left; display: flex; align-items: center; gap: 8px; }
+.standings .pts { font-weight: 700; }
+.crest-fallback { width: 26px; height: 26px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; background: #243044; font-size: 9px; }
+.fix { padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,.08); }
