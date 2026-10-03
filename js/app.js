@@ -345,21 +345,6 @@
       </div>
     `;
     const invout = $("invout");
-    invites.forEach((inv) => {
-      const d = document.createElement("div");
-      d.className = "kv";
-      d.innerHTML = `<span class="mono">${inv.revoked ? "باطل" : inv.code}</span><span>${inv.used}/${inv.maxUses} · تا ${E.tehran(inv.expiresAt)}</span>`;
-      if (!inv.revoked) {
-        const b = document.createElement("button");
-        b.className = "btn ghost";
-        b.style.width = "auto";
-        b.style.marginRight = "8px";
-        b.textContent = "ابطال";
-        b.onclick = async () => { await S.revokeInvite(inv.id); render(); };
-        d.prepend(b);
-      }
-      invout.appendChild(d);
-    });
 document.getElementById("mkinv").onclick = async () => {
   try {
     const inv = await S.createInvite({ maxUses: document.getElementById("imax").value, days: document.getElementById("idays").value });
