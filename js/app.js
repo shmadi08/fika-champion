@@ -312,29 +312,32 @@
     var table = {};
     league.forEach(function (m) {
       [m.home, m.away].forEach(function (c) {
-        if (!table[c]) table[c] = { c: c, p: 0, gf: 0, ga: 0, pts: 0 };
+        if (!table[c]) table[c] = { c: c, mp: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 };
       });
       if (!E.hasResult(m)) return;
       var h = table[m.home], a = table[m.away];
-      h.p++; a.p++;
+      h.mp++; a.mp++;
       h.gf += m.hg; h.ga += m.ag; a.gf += m.ag; a.ga += m.hg;
-      if (m.hg > m.ag) h.pts += 3;
-      else if (m.hg < m.ag) a.pts += 3;
-      else { h.pts++; a.pts++; }
+      if (m.hg > m.ag) { h.w++; h.pts += 3; a.l++; }
+      else if (m.hg < m.ag) { a.w++; a.pts += 3; h.l++; }
+      else { h.d++; a.d++; h.pts++; a.pts++; }
     });
     var rows = Object.keys(table).map(function (k) { return table[k]; });
-    rows.sort(function (x, y) { return y.pts - x.pts || (y.gf - y.ga) - (x.gf - x.ga); });
-    var html = '<div class="hero"><h2>لیگ قهرمانان</h2><p>جدول و نتایج بازی‌های ثبت‌شده.</p></div>';
-    html += '<div class="card"><h3>جدول</h3>';
+    rows.sort(function (x, y) { return y.pts - x.pts || (y.gf - y.ga) - (x.gf - x.ga) || y.gf - x.gf; });
+    var html = '<div class="hero"><h2>Champions League</h2><p>2026–27 league phase</p></div>';
+    html += '<div class="card standings-wrap" dir="ltr"><table class="standings"><thead><tr><th>#</th><th>Club</th><th>MP</th><th>W</th><th>D</th><th>L</th><th>Pts</th><th>GF</th><th>GA</th><th>GD</th></tr></thead><tbody>';
     rows.forEach(function (r, i) {
-      html += '<div class="kv"><span>' + (i + 1) + ". " + team(r.c) + "</span><span>" + r.pts + " امتیاز · " + r.gf + "-" + r.ga + "</span></div>";
+      var gd = r.gf - r.ga;
+      html += "<tr><td>" + (i + 1) + "</td><td class=\"club\">" + badge(r.c) + " " + team(r.c) + "</td><td>" + r.mp + "</td><td>" + r.w + "</td><td>" + r.d + "</td><td>" + r.l + "</td><td class=\"pts\">" + r.pts + "</td><td>" + r.gf + "</td><td>" + r.ga + "</td><td>" + (gd > 0 ? "+" : "") + gd + "</td></tr>";
     });
-    html += "</div>";
+    html += "</tbody></table></div>";
     weeks.forEach(function (w) {
-      html += '<div class="card"><h3>هفته ' + w + "</h3>";
+      html += '<div class="card" dir="ltr"><h3>Matchday ' + w + "</h3>";
       league.filter(function (m) { return m.md === w; }).forEach(function (m) {
-        var sc = E.hasResult(m) ? (m.hg + "-" + m.ag) : "–";
-        html += '<div class="kv"><span>' + team(m.home) + " " + sc + " " + team(m.away) + "</span><span>" + E.tehran(m.kickoff) + " تهران · " + E.stockholm(m.kickoff) + " استکهلم</span></div>";
+        var sc = E.hasResult(m) ? (m.hg + " - " + m.ag) : "vs";
+        var tehran = new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Tehran", day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }).format(new Date(m.kickoff));
+        var stockholm = new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Stockholm", day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }).format(new Date(m.kickoff));
+        html += '<div class="fix"><div>' + badge(m.home) + " " + team(m.home) + " " + sc + " " + team(m.away) + " " + badge(m.away) + "</div><div class=\"tiny\">" + tehran + " Tehran · " + stockholm + " Stockholm</div></div>";
       });
       html += "</div>";
     });
