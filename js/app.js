@@ -362,14 +362,16 @@
       }
       invout.appendChild(d);
     });
-    $("mkinv").onclick = async () => {
-      try {
-        const inv = await S.createInvite({ maxUses: $("imax").value, days: $("idays").value });
-        toast("کد ساخته شد");
-        render();
-        setTimeout(() => alert("کد دعوت:\n" + inv.code), 50);
-      } catch (e) { toast(e.message); }
-    };
+document.getElementById("mkinv").onclick = async () => {
+  try {
+    const inv = await S.createInvite({ maxUses: document.getElementById("imax").value, days: document.getElementById("idays").value });
+    const link = "https://fika-champion.onrender.com/?invite=" + inv.code;
+    const msg = "فیکا چمپیون\n" + link + "\nروی لینک بزنید و حساب بسازید.";
+    if (navigator.share) { await navigator.share({ title: "فیکا چمپیون", text: msg, url: link }); }
+    else { alert(msg); }
+    render();
+  } catch (e) { if (!e || e.name !== "AbortError") toast(e.message || "خطا"); }
+};
     const mems = $("mems");
     members.forEach((m) => {
       const d = document.createElement("div");
