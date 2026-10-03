@@ -59,7 +59,7 @@
     }
     showAuth(false);
     $("userchip").textContent = me.displayName + (me.isAdmin ? " · مدیر" : "");
-    const views = { matches: viewMatches, table: viewTable, chat: viewChat, more: viewMore, admin: viewAdmin };
+    const views = { matches: viewMatches, table: viewTable, chat: viewChat, more: viewMore, admin: viewAdmin, uefa: viewUefa };
     await (views[page] || viewMatches)(me);
   }
 
@@ -296,6 +296,43 @@
       d.textContent = `${f.displayName} · ${E.tehran(f.at)} — ${f.text}`;
       fblist.appendChild(d);
     });
+  }
+    async function viewUefa() {
+    var matches = await S.listMatches();
+    var league = matches.filter(function (m) { return m.stage === "league"; });
+    var weeks = [];
+    league.forEach(function (m) { if (weeks.indexOf(m.md) < 0) weeks.push(m.md); });
+    weeks.sort(function (a, b) { return a - b; });
+    var table = {};
+    league.forEach(function (m) {
+      [m.home, m.away].forEach(function (c) {
+        if (!table[c]) table[c] = { c: c, p: 0, gf: 0, ga: 0, pts: 0 };
+      });
+      if (!E.hasResult(m)) return;
+      var h = table[m.home], a = table[m.away];
+      h.p++; a.p++;
+      h.gf += m.hg; h.ga += m.ag; a.gf += m.ag; a.ga += m.hg;
+      if (m.hg > m.ag) h.pts += 3;
+      else if (m.hg < m.ag) a.pts += 3;
+      else { h.pts++; a.pts++; }
+    });
+    var rows = Object.keys(table).map(function (k) { return table[k]; });
+    rows.sort(function (x, y) { return y.pts - x.pts || (y.gf - y.ga) - (x.gf - x.ga); });
+    var html = '<div class="hero"><h2>لیگ قهرمانان</h2><p>جدول و نتایج بازی‌های ثبت‌شده.</p></div>';
+    html += '<div class="card"><h3>جدول</h3>';
+    rows.forEach(function (r, i) {
+      html += '<div class="kv"><span>' + (i + 1) + ". " + team(r.c) + "</span><span>" + r.pts + " امتیاز · " + r.gf + "-" + r.ga + "</span></div>";
+    });
+    html += "</div>";
+    weeks.forEach(function (w) {
+      html += '<div class="card"><h3>هفته ' + w + "</h3>";
+      league.filter(function (m) { return m.md === w; }).forEach(function (m) {
+        var sc = E.hasResult(m) ? (m.hg + "-" + m.ag) : "–";
+        html += '<div class="kv"><span>' + team(m.home) + " " + sc + " " + team(m.away) + "</span><span>" + E.tehran(m.kickoff) + " تهران · " + E.stockholm(m.kickoff) + " استکهلم</span></div>";
+      });
+      html += "</div>";
+    });
+    document.getElementById("view").innerHTML = html;
   }
     async function viewAdmin(me) {
     if (!me.isAdmin) { page = "more"; render(); return; }
