@@ -410,6 +410,6 @@ document.getElementById("mkinv").onclick = async () => {
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("./sw.js").catch(() => {});
   }
-
+  var eye = document.getElementById("pweye"); if (eye) eye.onclick = function () { var p = document.getElementById("password"); if (!p) return; if (p.type === "password") { p.type = "text"; eye.textContent = "پنهان"; } else { p.type = "password"; eye.textContent = "نمایش"; } };  
   boot();
 })();
