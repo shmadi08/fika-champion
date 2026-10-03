@@ -101,13 +101,16 @@ window.FikaEngine = (() => {
       hour: "2-digit", minute: "2-digit"
     }).format(d);
   }
-
+  function stockholm(isoOrMs) {
+    const d = new Date(isoOrMs);
+    return new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Stockholm", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }).format(d);
+  }
   function validGoals(n) {
     return Number.isInteger(n) && n >= 0 && n <= 20;
   }
 
   return {
     LOCK_MS, now, isLocked, hasResult, basePoints, bonusPoints,
-    scoreOne, scoreUser, rankMembers, tehran, validGoals, kickMs
+    scoreOne, scoreUser, rankMembers, tehran, Stockholm, validGoals, kickMs
   };
 })();
