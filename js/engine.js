@@ -111,6 +111,6 @@ window.FikaEngine = (() => {
 
   return {
     LOCK_MS, now, isLocked, hasResult, basePoints, bonusPoints,
-    scoreOne, scoreUser, rankMembers, tehran, Stockholm, validGoals, kickMs
+    scoreOne, scoreUser, rankMembers, tehran, stockholm, validGoals, kickMs
   };
 })();
