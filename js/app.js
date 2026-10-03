@@ -59,7 +59,7 @@
     }
     showAuth(false);
     $("userchip").textContent = me.displayName + (me.isAdmin ? " · مدیر" : "");
-    const views = { matches: viewMatches, table: viewTable, chat: viewChat, more: viewMore, admin: viewAdmin };
+    const views = { matches: viewMatches, table: viewTable, chat: viewChat, more: viewMore, admin: viewAdmin, uefa: viewUefa };
     await (views[page] || viewMatches)(me);
   }
 
@@ -297,7 +297,7 @@
       fblist.appendChild(d);
     });
   }
-
+  async function viewUefa() { const matches = await S.listMatches(); const league = matches.filter((m) => m.stage === "league"); const weeks = [...new Set(league.map((m) => m.md))].sort((a, b) => a - b); const table = {}; league.forEach((m) => { [m.home, m.away].forEach((c) => { if (!table[c]) table[c] = { c, p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 }; }); if (!E.hasResult(m)) return; const h = table[m.home], a = table[m.away]; h.p++; a.p++; h.gf += m.hg; h.ga += m.ag; a.gf += m.ag; a.ga += m.hg; if (m.hg > m.ag) { h.w++; h.pts += 3; a.l++; } else if (m.hg < m.ag) { a.w++; a.pts += 3; h.l++; } else { h.d++; a.d++; h.pts++; a.pts++; } }); const rows = Object.values(table).sort((x, y) => y.pts - x.pts  (y.gf - y.ga) - (x.gf - x.ga)  y.gf - x.gf || team(x.c).localeCompare(team(y.c))); $("view").innerHTML = <div class="hero"><h2>لیگ قهرمانان</h2><p>جدول و نتایج از بازی‌های ثبت‌شده. ۱ تا ۸ مستقیم، ۹ تا ۲۴ پلی‌آف.</p></div> <div class="card"><h3>جدول رسمی</h3><div id="utab"></div></div> <div class="card"><h3>نتایج هفته</h3><div class="tabs" id="uweeks"></div><div id="ures"></div></div>; ("utab").innerHTML = rows.map((r, i) => `<div class="kv"><span>{i + 1}. <img class="crest" alt="" src="{crest(r.c)}" onerror="this.style.display='none'"> ${team(r.c)}</span><span>{r.pts} امتیاز · {r.gf}-{r.ga}</span></div>).join(""); const weeksBox = $("uweeks"); weeks.forEach((w) => { const b = document.createElement("button"); b.textContent = "هفته " + w; b.className = w === weeks[0] ? "on" : ""; b.onclick = () => { weeksBox.querySelectorAll("button").forEach((x) => x.classList.remove("on")); b.classList.add("on"); ("ures").innerHTML = league.filter((m) => m.md === w).map((m) => `<div class="kv"><span><img class="crest" alt="" src="{crest(m.home)}" onerror="this.style.display='none'"> {team(m.home)} ${E.hasResult(m) ? m.hg + "-" + m.ag : "–"} ${team(m.away)} <img class="crest" alt="" src="{crest(m.away)}" onerror="this.style.display='none'"></span><span>${E.tehran(m.kickoff)} تهران · ${E.stockholm(m.kickoff)} استکهلم</span></div>).join(""); }; weeksBox.appendChild(b); }); if (weeks[0]) weeksBox.querySelector("button").click(); }
   async function viewAdmin(me) {
     if (!me.isAdmin) { page = "more"; render(); return; }
     const invites = await S.listInvites();
