@@ -16,7 +16,10 @@
   let mdFilter = 2;
 
   function team(code) { return T[code] || code; }
-
+  function crest(code) {
+    var id = {RMA:86,BAR:81,MCI:65,MUN:66,LIV:64,ARS:57,AVL:58,BAY:5,DOR:4,PSG:524,INT:108,ATL:78,NAP:113,POR:503,SCP:498,GAL:610,FEN:611,PSV:674,RBL:721,BRU:851,LIL:521,ROM:100,BET:90,VIL:94,FEY:675,STU:10,LEN:516}[code];
+    return id ? "https://crests.football-data.org/" + id + ".png" : "";
+  }
   function showAuth(show) {
     $("auth").classList.toggle("hidden", !show);
     $("app").classList.toggle("hidden", show);
@@ -117,13 +120,14 @@
       wrap.className = "match-block";
       wrap.innerHTML = `
         <div class="meta">
-          <span>${E.tehran(m.kickoff)} · تهران</span>
+          
+          <span>{E.tehran(m.kickoff)} تهران<br>{E.stockholm(m.kickoff)} استکهلم</span>
           <span class="badge ${st.key === "lock" || st.key === "done" ? "lock" : ""} ${m.source === "manual" ? "manual" : ""}">${st.label}${m.md ? " · هفته " + m.md : " · " + (window.FIKA_STAGES[m.stage] || "")}</span>
         </div>
         <div class="match">
-          <div class="team">${team(m.home)}</div>
+          <div class="team"><img class="crest" alt="" src=" {team(m.home)}</div>
           <div class="score-box" data-id="${m.id}"></div>
-          <div class="team away">${team(m.away)}</div>
+          <div class="team away"><img class="crest" alt="" src=" {team(m.away)}</div>
         </div>
         <div class="pts-slot"></div>
       `;
