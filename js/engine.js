@@ -93,13 +93,16 @@ window.FikaEngine = (() => {
     });
   }
 
-  function tehran(isoOrMs) {
+ function tehran(isoOrMs) {
     const d = new Date(isoOrMs);
-    return new Intl.DateTimeFormat("fa-IR", {
+    const parts = new Intl.DateTimeFormat("fa-IR", {
       timeZone: "Asia/Tehran",
-      year: "numeric", month: "short", day: "numeric",
+      day: "numeric", month: "long", year: "numeric",
       hour: "2-digit", minute: "2-digit"
-    }).format(d);
+    }).formatToParts(d);
+    const g = {};
+    parts.forEach(function (p) { g[p.type] = p.value; });
+    return g.day + " " + g.month + " " + g.year + "، " + g.hour + ":" + g.minute;
   }
   function stockholm(isoOrMs) {
     const d = new Date(isoOrMs);
