@@ -125,7 +125,7 @@
       wrap.innerHTML = `
         <div class="meta">
           
-          <span dir="ltr">${E.tehran(m.kickoff)} Tehran<br>${E.stockholm(m.kickoff)} Stockholm</span>
+          <span><span dir="rtl">${E.tehran(m.kickoff)} تهران</span><br><span dir="ltr">${E.stockholm(m.kickoff)} Stockholm</span></span>
           <span class="badge ${st.key === "lock" || st.key === "done" ? "lock" : ""} ${m.source === "manual" ? "manual" : ""}">${st.label}${m.md ? " · هفته " + m.md : " · " + (window.FIKA_STAGES[m.stage] || "")}</span>
         </div>
         <div class="match">
