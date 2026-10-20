@@ -1,3 +1,42 @@
+const FD_TOKEN = process.env.FD_TOKEN || "";
+const FD_NAMES = {
+  LEN: "lens", SCP: "sporting", SAB: "sabah", SLP: "slavia",
+  ARS: "arsenal", LIL: "lille", ATL: "atl", MUN: "manchester united",
+  INT: "inter", BRU: "brug", GAL: "galatasaray", BAR: "barcelona",
+  RBL: "leipzig", PSV: "psv", VIK: "viking", BAY: "bayern",
+  VIL: "villarreal", NAP: "napoli", FEY: "feyenoord", COM: "como",
+  LASK: "lask", LIV: "liverpool", ROM: "roma", RMA: "real madrid",
+  AVL: "aston villa", FEN: "fener", SHA: "shakhtar", AEK: "aek",
+  BOD: "bod", DOR: "dortmund", MCI: "manchester city", PSG: "paris",
+  BET: "betis", POR: "porto", SLO: "slovan", STU: "stuttgart"
+};
+let fdAt = 0;
+function fdHit(code, team) {
+  const n = (team.name || "").toLowerCase() + " " + (team.shortName || "").toLowerCase();
+  return n.includes(FD_NAMES[code] || code.toLowerCase());
+}
+async function pullResults(db) {
+  if (!FD_TOKEN || Date.now() - fdAt < 20 * 60 * 1000) return;
+  fdAt = Date.now();
+  const r = await fetch("https://api.football-data.org/v4/competitions/CL/matches?season=2026", {
+    headers: { "X-Auth-Token": FD_TOKEN }
+  });
+  if (!r.ok) return;
+  const data = await r.json();
+  let changed = false;
+  for (const fm of data.matches || []) {
+    if (fm.status !== "FINISHED") continue;
+    const m = db.matches.find((x) => fdHit(x.home, fm.homeTeam) && fdHit(x.away, fm.awayTeam));
+    if (!m) continue;
+    const hg = fm.score && fm.score.fullTime && fm.score.fullTime.home;
+    const ag = fm.score && fm.score.fullTime && fm.score.fullTime.away;
+    if (!Number.isInteger(hg) || !Number.isInteger(ag)) continue;
+    if (m.hg === hg && m.ag === ag && m.source === "official") continue;
+    m.hg = hg; m.ag = ag; m.source = "official";
+    changed = true;
+  }
+  if (changed) await save(db);
+}
 import http from "node:http";
 import fs from "node:fs";
 import path from "node:path";
