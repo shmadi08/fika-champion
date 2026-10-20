@@ -25,7 +25,7 @@ async function pullResults(db) {
   const data = await r.json();
   let changed = false;
   for (const fm of data.matches || []) {
-    if (fm.status !== "FINISHED") continue;
+    if (fm.status !== "FINISHED" && fm.status !== "IN_PLAY" && fm.status !== "PAUSED") continue;
     const m = db.matches.find((x) => fdHit(x.home, fm.homeTeam) && fdHit(x.away, fm.awayTeam));
     if (!m) continue;
     const hg = fm.score && fm.score.fullTime && fm.score.fullTime.home;
