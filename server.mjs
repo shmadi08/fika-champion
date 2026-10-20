@@ -349,8 +349,9 @@ async function api(req, res, url) {
       });
     }
 
-    if (route === "GET /api/matches") {
+        if (route === "GET /api/matches") {
       needUser();
+      await pullResults(db);
       return send(res, 200, { matches: db.matches });
     }
 
